@@ -1,7 +1,11 @@
 # Project Akhir Algoritma & Pemrograman Lanjut 2022
 
+## Pengertian 
+Aplikasi Bank merupakan aplikasi yang meliputi pencatatan, penghitungan, dan pelaporan semua kegiatan di bidang perbankan.
+
 ## Fitur-fitur
 Aplikasi Bank sederhana kami memiliki **6** fitur utama, yaitu sebagai berikut:
+
 ### 1. Read
 
 ### 2. Add
@@ -27,3 +31,4 @@ Baca [panduan berkontribusi](CONTRIBUTING.md) untuk mengetahui lebih lanjut meng
 ## Kontak
 
 - [Desy Nur Azizah](mailto:123210083@gmail.com)
+- [Brillian Cahya Dewa](mailto:123210065@gmail.com)
