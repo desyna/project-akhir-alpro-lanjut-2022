@@ -14,10 +14,13 @@ void ReadD();
 void Add();
 void Del();
 void Search();
-// void Transaksi();
+void Transaksi();
+void Saldo(int option);
+void Transfer();
 // void History();
 
 int tempno[100];
+int inno[1000];
 struct data
 {
     int norek;
@@ -28,11 +31,16 @@ string filename = "NasabahBD.txt";
 data nasabah[100] = {{123210065, "Brillian Cahya", 2500000},
                      {123210083, "Desy Nur Azizah", 2000000}};
 data temp[100];
+data temps[1000];
 int s_nasabah = 0;
 
 int main()
 {
-    int option;
+    int option, k=1;
+    for (int i = 0; i < 1000; i++)
+    {
+        inno[i] = k++;
+    }
 
     do
     {
@@ -67,7 +75,7 @@ int main()
             Search();
             break;
         case 5:
-            // Transaksi();
+            Transaksi();
             break;
         case 6:
             // History();
@@ -273,7 +281,7 @@ void Del()
                 }
                 ofs.close();
             }
-            cout << "Data ditemukan" << temp[index].norek << index;
+            cout << "Data berhasil dihapus";
             remove("NasabahBD.txt");
             rename("temp.dat", "NasabahBD.txt");
             ulang = 0;
@@ -321,10 +329,160 @@ void Search()
     }
 }
 
-// void Transaksi()
-// {
-// }
+void Transaksi()
+{
+    int optionTransaksi;
+    do
+    {
+        // system("CLS");
+        cout << "\n\n========================================"
+             << "\n             Program BANK BD              "
+             << "\n__________________________________________"
+             << "\n                Transaksi                 "
+             << "\n=========================================="
+             << "\n 1. Isi saldo"
+             << "\n 2. Tarik tunai"
+             << "\n 3. Transfer"
+             << "\n 4. Back"
+             << "\n\n Pilih : ";
+        cin >> optionTransaksi;
+        cout << "\n==========================================\n";
+        switch (optionTransaksi)
+        {
+        case 1:
+            Saldo(optionTransaksi);
+            break;
+        case 2:
+            Saldo(optionTransaksi);
+            break;
+        case 3:
+            Transfer();
+            break;
+        default:
+            break;
+        }
+    } while (optionTransaksi != 4);
+}
 
-// void History()
-// {
-// }
+void History()
+{
+    
+}
+
+void Saldo(int option)
+{
+    int inrek, insal;
+    string filehistory = "History.txt";
+    cout << "Masukkan no rekening : ";
+    cin >> inrek;
+    ifstream ifs(filename);
+    int count = 0;
+    int index;
+    if (ifs.is_open())
+    {
+        int i = count;
+        while (!ifs.eof())
+        {
+            ifs >> tempno[i] >> temp[i].norek >> temp[i].nama >> temp[i].saldo;
+            i++;
+        }
+        count += i - 1;
+        ifs.close();
+    }
+
+    for (int i = 0; i <= count; i++)
+    {
+        index = ((inrek == temp[i].norek)) ? i : count;
+        if (index != count)
+            break;
+    }
+
+    if (index == count)
+    {
+        cout << "Data tidak ditemukan";
+    }
+    else
+    {
+        cout << "Masukkan nominal yang anda inginkan : Rp ";
+        cin >> insal;
+
+        ifstream ifs(filehistory);
+        int a = 0;
+
+        if (ifs.is_open())
+        {
+            int j = a;
+            while (!ifs.eof())
+            {
+                ifs >> inno[j] >> temps[j].norek >> temps[j].nama >> temps[j].saldo;
+                j++;
+            }
+            a += j-1;
+            cout << a << inno[a];
+            ifs.close();
+        }
+        cout << option;
+
+        switch (option)
+        {
+        case 1:
+        {
+            temp[index].saldo += insal;
+            ofstream ofs(filehistory, ios::app);
+            if (ofs.is_open())
+            {
+                ofs << left << setw(5) << inno[a]
+                    << setprecision(10) << setw(15) << temp[index].norek
+                    << setw(30) << temp[index].nama
+                    << right << setw(10) << "+" << insal
+                    << endl;
+
+                ofs.close();
+            }
+        }
+        break;
+        case 2:
+        {
+            temp[index].saldo -= insal;
+            ofstream ofs(filehistory, ios::app);
+            if (ofs.is_open())
+            {
+
+                ofs << left << setw(5) << inno[a]
+                    << setprecision(10) << setw(15) << temp[index].norek
+                    << setw(30) << temp[index].nama
+                    << right << setw(10) << "-" << insal
+                    << endl;
+
+                ofs.close();
+            }
+        }
+        break;
+        default:
+            break;
+        }
+
+        cout << "Saldo anda : Rp " << temp[index].saldo;
+        ofstream ofs("tempsal.dat", ios::app);
+        if (ofs.is_open())
+        {
+            for (int i = 0; i < count; i++)
+            {
+
+                ofs << left << setw(5) << tempno[i]
+                    << setprecision(10) << setw(15) << temp[i].norek
+                    << setw(30) << temp[i].nama
+                    << right << setw(10) << temp[i].saldo
+                    << endl;
+            }
+            ofs.close();
+        }
+        cout << "\nSuccess";
+        remove("NasabahBD.txt");
+        rename("tempsal.dat", "NasabahBD.txt");
+    }
+}
+
+void Transfer()
+{
+}
