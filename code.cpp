@@ -17,7 +17,7 @@ void Search();
 void Transaksi();
 void Saldo(int option);
 void Transfer();
-// void History();
+void History();
 
 int tempno[100];
 int inno[1000];
@@ -28,15 +28,14 @@ struct data
     int saldo;
 };
 string filename = "NasabahBD.txt";
-data nasabah[100] = {{123210065, "Brillian Cahya", 2500000},
-                     {123210083, "Desy Nur Azizah", 2000000}};
+data nasabah[100] = {};
 data temp[100];
 data temps[1000];
 int s_nasabah = 0;
 
 int main()
 {
-    int option, k=1;
+    int option, k = 1;
     for (int i = 0; i < 1000; i++)
     {
         inno[i] = k++;
@@ -78,7 +77,7 @@ int main()
             Transaksi();
             break;
         case 6:
-            // History();
+            History();
             break;
         default:
             break;
@@ -366,7 +365,68 @@ void Transaksi()
 
 void History()
 {
-    
+    int inrek;
+    string filehistory = "History.txt";
+    cout << "Masukkan no rekening : ";
+    cin >> inrek;
+    ifstream ifs(filename);
+    int count = 0;
+    int index;
+    if (ifs.is_open())
+    {
+        int i = count;
+        while (!ifs.eof())
+        {
+            ifs >> tempno[i] >> temp[i].norek >> temp[i].nama >> temp[i].saldo;
+            i++;
+        }
+        count += i - 1;
+        ifs.close();
+    }
+
+    for (int i = 0; i <= count; i++)
+    {
+        index = ((inrek == temp[i].norek)) ? i : count;
+        if (index != count)
+            break;
+    }
+
+    if (index == count)
+    {
+        cout << "Data tidak ditemukan";
+    }
+    else
+    {
+        ifstream ifs(filehistory);
+        int counts = 0;
+        int indexs;
+        if (ifs.is_open())
+        {
+            int j = counts;
+            while (!ifs.eof())
+            {
+                ifs >> inno[j] >> temps[j].norek >> temps[j].nama >> temps[j].saldo;
+                j++;
+            }
+            counts += j - 1;
+            ifs.close();
+        }
+        cout << "Nama : " << replaceunderscore(temp[index].nama)
+             << "\nSaldo : Rp " << temp[index].saldo
+             << "\nRiwayat Transaksi\n";
+
+        cout << "==========================================\n"
+             << left << setw(5) << "No" << setw(10) << "Transaksi\n"
+             << "==========================================\n";
+        int n = 1;
+        for (int i = 0; i <= counts; i++)
+        {
+            if (temps[i].norek == temp[index].norek)
+            {
+                cout << setw(5) << n++ << setw(10) << temps[i].saldo << endl;
+            }
+        }
+    }
 }
 
 void Saldo(int option)
@@ -417,11 +477,9 @@ void Saldo(int option)
                 ifs >> inno[j] >> temps[j].norek >> temps[j].nama >> temps[j].saldo;
                 j++;
             }
-            a += j-1;
-            cout << a << inno[a];
+            a += j - 1;
             ifs.close();
         }
-        cout << option;
 
         switch (option)
         {
@@ -485,4 +543,68 @@ void Saldo(int option)
 
 void Transfer()
 {
+    int inrek, s_inrek;
+    cout << "Masukkan no rekening anda : ";
+    cin >> inrek;
+    ifstream ifs(filename);
+    int count = 0;
+    int index;
+    if (ifs.is_open())
+    {
+        int i = count;
+        while (!ifs.eof())
+        {
+            ifs >> tempno[i] >> temp[i].norek >> temp[i].nama >> temp[i].saldo;
+            i++;
+        }
+        count += i - 1;
+        ifs.close();
+    }
+
+    for (int i = 0; i <= count; i++)
+    {
+        index = ((inrek == temp[i].norek)) ? i : count;
+        if (index != count)
+            break;
+    }
+
+    if (index == count)
+    {
+        cout << "Data tidak ditemukan";
+    }
+    else
+    {
+        cout << "Masukkan no rekening yang dituju : ";
+        cin >> s_inrek;
+        ifstream ifs(filename);
+        int count = 0;
+        int index;
+        if (ifs.is_open())
+        {
+            int i = count;
+            while (!ifs.eof())
+            {
+                ifs >> tempno[i] >> temp[i].norek >> temp[i].nama >> temp[i].saldo;
+                i++;
+            }
+            count += i - 1;
+            ifs.close();
+        }
+
+        for (int i = 0; i <= count; i++)
+        {
+            index = ((inrek == temp[i].norek)) ? i : count;
+            if (index != count)
+                break;
+        }
+
+        if (index == count)
+        {
+            cout << "Data tidak ditemukan";
+        }
+        else
+        {
+            cout << "Masukkan nominal : Rp ";
+        }
+    }
 }
