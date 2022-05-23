@@ -35,6 +35,7 @@ int s_nasabah = 0;
 
 int main()
 {
+    system("color 1F");
     int option, k = 1;
     for (int i = 0; i < 1000; i++)
     {
