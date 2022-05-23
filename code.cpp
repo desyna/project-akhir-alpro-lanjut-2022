@@ -18,6 +18,7 @@ void Transaksi();
 void Saldo(int option);
 void Transfer();
 void History();
+void PressAnyKey();
 
 int tempno[100];
 int inno[1000];
@@ -44,12 +45,12 @@ int main()
 
     do
     {
-        // system("CLS");
-        cout << "\n\n========================================"
-             << "\n             Program BANK BD              "
-             << "\n__________________________________________"
-             << "\n                Main Menu                 "
-             << "\n=========================================="
+        system("CLS");
+        cout << "\n\n============================================================="
+             << "\n                        Program BANK BD                      "
+             << "\n_____________________________________________________________"
+             << "\n                           Main Menu                         "
+             << "\n============================================================="
              << "\n 1. Tampilkan data nasabah"
              << "\n 2. Tambahkan nasabah"
              << "\n 3. Hapus nasabah"
@@ -59,7 +60,7 @@ int main()
              << "\n 7. Exit program"
              << "\n\n Pilih : ";
         cin >> option;
-        cout << "\n==========================================\n";
+        cout << "\n============================================================\n";
         switch (option)
         {
         case 1:
@@ -132,6 +133,7 @@ void ReadD()
          << setprecision(10) << setw(15) << "No Rekening"
          << setw(30) << "Nama"
          << right << setw(10) << "Saldo" << endl;
+    cout << "============================================================\n";
 
     for (int i = 0; i < count; i++)
     {
@@ -140,6 +142,7 @@ void ReadD()
              << setw(30) << replaceunderscore(temp[i].nama)
              << right << setw(10) << temp[i].saldo << endl;
     }
+    PressAnyKey();
 }
 
 void Add()
@@ -177,9 +180,9 @@ void Add()
         if (index == count)
         {
             cin.ignore(1, '\n');
-            cout << "Nama : ";
+            cout << "Nama        : ";
             gets(nasabah[s_nasabah].nama);
-            cout << "Saldo awal : ";
+            cout << "Saldo awal  : ";
             cin >> nasabah[s_nasabah].saldo;
             int ulangi = 1;
             do
@@ -225,6 +228,7 @@ void Add()
             break;
         }
     } while (ulang = 1);
+    PressAnyKey();
 }
 
 void Del()
@@ -251,6 +255,21 @@ void Del()
             ifs.close();
         }
 
+        string filehistory = "History.txt";
+        ifstream ifs_history(filehistory);
+        int counts = 0;
+        if (ifs_history.is_open())
+        {
+            int j = counts;
+            while (!ifs_history.eof())
+            {
+                ifs_history >> inno[j] >> temps[j].norek >> temps[j].nama >> temps[j].saldo;
+                j++;
+            }
+            counts += j - 1;
+            ifs_history.close();
+        }
+
         for (int i = 0; i <= count; i++)
         {
             index = ((inrek == temp[i].norek)) ? i : count;
@@ -265,6 +284,26 @@ void Del()
         }
         else
         {
+
+            ofstream ofs_history("temps.dat", ios::app);
+            if (ofs_history.is_open())
+            {
+                for (int i = 0; i < counts; i++)
+                {
+                    if (inrek != temps[i].norek)
+                    {
+                        ofs_history << left << setw(5) << inno[i]
+                            << setprecision(10) << setw(15) << temps[i].norek
+                            << setw(30) << temps[i].nama
+                            << right << setw(10) << temps[i].saldo
+                            << endl;
+                    }
+                }
+                ofs_history.close();
+            }
+            remove("History.txt");
+            rename("temps.dat", "History.txt");
+
             ofstream ofs("temp.dat", ios::app);
             if (ofs.is_open())
             {
@@ -287,8 +326,8 @@ void Del()
             ulang = 0;
             break;
         }
-
     } while (ulang = 1);
+    PressAnyKey();
 }
 
 void Search()
@@ -324,9 +363,10 @@ void Search()
     }
     else
     {
-        cout << "Nama : " << replaceunderscore(temp[index].nama)
-             << "\nSaldo : " << temp[index].saldo;
+        cout << "Nama                 : " << replaceunderscore(temp[index].nama)
+             << "\nSaldo                : " << temp[index].saldo;
     }
+    PressAnyKey();
 }
 
 void Transaksi()
@@ -334,19 +374,19 @@ void Transaksi()
     int optionTransaksi;
     do
     {
-        // system("CLS");
-        cout << "\n\n========================================"
-             << "\n             Program BANK BD              "
-             << "\n__________________________________________"
-             << "\n                Transaksi                 "
-             << "\n=========================================="
+        system("CLS");
+        cout << "\n\n============================================================="
+             << "\n                        Program BANK BD                        "
+             << "\n_____________________________________________________________"
+             << "\n                           Transaksi                           "
+             << "\n============================================================="
              << "\n 1. Isi saldo"
              << "\n 2. Tarik tunai"
              << "\n 3. Transfer"
              << "\n 4. Back"
              << "\n\n Pilih : ";
         cin >> optionTransaksi;
-        cout << "\n==========================================\n";
+        cout << "\n=============================================================\n";
         switch (optionTransaksi)
         {
         case 1:
@@ -412,9 +452,9 @@ void History()
             counts += j - 1;
             ifs.close();
         }
-        cout << "Nama : " << replaceunderscore(temp[index].nama)
-             << "\nSaldo : Rp " << temp[index].saldo
-             << "\nRiwayat Transaksi\n";
+        cout << "Nama                 : " << replaceunderscore(temp[index].nama)
+             << "\nSaldo                : Rp " << temp[index].saldo
+             << "\n\nRiwayat Transaksi\n";
 
         cout << "==========================================\n"
              << left << setw(5) << "No" << setw(10) << "Transaksi\n"
@@ -428,6 +468,7 @@ void History()
             }
         }
     }
+    PressAnyKey();
 }
 
 void Saldo(int option)
@@ -540,6 +581,7 @@ void Saldo(int option)
         remove("NasabahBD.txt");
         rename("tempsal.dat", "NasabahBD.txt");
     }
+    PressAnyKey();
 }
 
 void Transfer()
@@ -608,4 +650,13 @@ void Transfer()
             cout << "Masukkan nominal : Rp ";
         }
     }
+    PressAnyKey();
+}
+
+void PressAnyKey()
+{
+  cout << "\n"
+       << "[Press any key to continue.]";
+  getch();
+  system("CLS");
 }
