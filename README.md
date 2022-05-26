@@ -8,16 +8,22 @@ Aplikasi Bank sederhana kami memiliki **6** fitur utama, yaitu sebagai berikut:
 
 ### 1. Read
 ![menu read](https://res.cloudinary.com/desyna/image/upload/v1653317802/project_alpro_lanjut/tampilkan_data_t3neio.jpg)
+Fitur Read berfunngsi untuk menampilkan data nasabah
 ### 2. Add
 ![menu menambahkan](https://res.cloudinary.com/desyna/image/upload/v1653317803/project_alpro_lanjut/menambahkan_data_ru8jwz.jpg)
+Fitur Add berfungsi untuk menambahkan nasabah baru
 ### 3. Delete
 ![menu hapus](https://res.cloudinary.com/desyna/image/upload/v1653317804/project_alpro_lanjut/menghapus_data_grnigy.jpg)
+Fitur Delete berfungsi untuk menghapus data nasabah berdasarkan no.rekening
 ### 4. Search
 ![menu search](https://res.cloudinary.com/desyna/image/upload/v1653317804/project_alpro_lanjut/search_czofqp.jpg)
+Fitur Search berfungsi untuk mencari data nasabah berdasarkan no.rekening
 ### 5. Transaksi
 ![menu transaksi](https://res.cloudinary.com/desyna/image/upload/v1653317802/project_alpro_lanjut/transaksi_scdwph.jpg)
+Fitur transaksi berfungsi untuk melakukan transaksi seperti setor, tarik tunai, dan transfer
 ### 6. History
-![menu riwayat transaksi]()
+![menu riwayat transaksi](https://res.cloudinary.com/desyna/image/upload/v1653554285/project_alpro_lanjut/history_wcw7ns.jpg)
+Fitur history berfungsi untuk melihat riwayat transaksi yang telah dilakukan
 
 ## Instalasi
 
