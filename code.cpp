@@ -536,17 +536,24 @@ void History()
              << "\nSaldo                : Rp " << temp[index].saldo
              << "\n\nRiwayat Transaksi\n";
 
-        cout << "============================================================\n"
-             << left << setw(5) << "No" << setw(12) << "Transaksi" << setw(12) << "Ket" << setw(25) << "Waktu" << endl
-             << "============================================================\n";
-
-        int n = 1;
-        for (int i = 0; i <= counts; i++)
+        if (counts == 0)
         {
-            if (temps[i].norek == temp[index].norek)
+            cout << "Belum ada transaksi";
+        }
+        else
+        {
+            cout << "============================================================\n"
+                 << left << setw(5) << "No" << setw(12) << "Transaksi" << setw(12) << "Ket" << setw(25) << "Waktu" << endl
+                 << "============================================================\n";
+
+            int n = 1;
+            for (int i = 0; i < counts + 1; i++)
             {
-                cout << setw(5) << n++ << setw(12) << temps[i].saldo
-                     << setw(12) << temp_log[i].trsaksi << setw(25) << replaceunderscore(temp_waktu[i]) << "\n";
+                if (temps[i].norek == temp[index].norek)
+                {
+                    cout << setw(5) << n++ << setw(12) << temps[i].saldo
+                         << setw(12) << temp_log[i].trsaksi << setw(25) << replaceunderscore(temp_waktu[i]) << "\n";
+                }
             }
         }
     }
