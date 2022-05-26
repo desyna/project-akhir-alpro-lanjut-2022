@@ -35,7 +35,6 @@ struct riwayat
     string trsaksi;
     time_t waktu;
 };
-
 struct data
 {
     int norek;
@@ -644,6 +643,7 @@ void Saldo(int option)
                         << setw(12) << transaksi[a].trsaksi << setw(20) << replacespasi(ctime(&transaksi[a].waktu));
                     ofs.close();
                 }
+                cout << "\nSuccess";
             }
             else
             {
@@ -734,7 +734,7 @@ void Transfer()
             if (temp[index].saldo >= transfer)
             {
                 cout << "\nApakah Anda yakin untuk melakukan transfer sebesar Rp. " << transfer << endl
-                     << "ke rekening " << temp[indexs].norek << " ? [Y/N]";
+                     << "ke rekening " << temp[indexs].norek << " atas nama '" << replaceunderscore(temp[indexs].nama) << "' ? [Y/N] ";
                 cin >> opsi;
                 if (opsi == 'y' || opsi == 'Y')
                 {
