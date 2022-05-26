@@ -8,23 +8,28 @@
 
 using namespace std;
 
-string replacespasi(string str);
-string replaceunderscore(string str);
-void ReadD();
-void Add();
-void Del();
-void Search();
-void Transaksi();
-void Saldo(int option);
-void Transfer();
-void History();
-void sorting1(int n);
-void sorting2(int n);
-void PressAnyKey();
+// 🛠️ FUNGSI MENGUBAH SPASI
+string replacespasi(string str);      // Mengubah " " --> "_"
+string replaceunderscore(string str); // Mengembalikan " "
 
-int tempno[100];
-int inno[1000];
+// ⚙️ FUNGSI CRUD
+void ReadD();  // Membaca data nasabah
+void Add();    // Menambahkan nasabah baru
+void Del();    // Menghapus data nasabah berdasarkan no.rekening
+void Search(); // Mencari data nasabah berdasarkan no.rekening
 
+// 💵 FUNGSI TRANSAKSI
+void Transaksi();       // Menu Transaksi
+void Saldo(int option); // Fungsi tambah saldo dan penarikan
+void Transfer();        // Fungsi transfer ((belum bisa ke bank lain))
+void History();         // Menampilkan riwayat transaksi
+
+// 📋 LAINNYA
+void sorting1(int n); // Sorting data berdasarkan nama
+void sorting2(int n); // Sorting data berdasarkan jumlah saldo
+void PressAnyKey();   // Print "press any key"
+
+// 🏢 DATA NASABAH
 struct riwayat
 {
     string trsaksi;
@@ -37,26 +42,33 @@ struct data
     char nama[30];
     int saldo;
 };
-string filename = "NasabahBD.txt";
-string filehistory = "History.txt";
-data nasabah[100] = {};
-riwayat transaksi[100];
+string filename = "NasabahBD.txt";  // Memberikan nama file data nasabah
+string filehistory = "History.txt"; // Memberikan nama file riwayat transaksi
+
+// 👫 DATA NASABAH
+data nasabah[100];
+data temp_sort;
 data temp[100];
+int s_nasabah = 0;
+
+// 📝👫 DATA RIWAYAT TRANSAKSI
 riwayat temp_log[100];
 data temps[1000];
-data temp_sort;
+riwayat transaksi[100];
 string temp_waktu[100];
-int s_nasabah = 0;
+int tempno[100];
+int inno[1000];
 
 int main()
 {
-    system("color 1F");
+    system("color 1F"); // Mengubah warna background
     int option, k = 1;
+    // Print nomor 1-1000
     for (int i = 0; i < 1000; i++)
     {
         inno[i] = k++;
     }
-
+    // Main Menu
     do
     {
         system("CLS");
@@ -128,8 +140,8 @@ string replaceunderscore(string str)
 
 void ReadD()
 {
-    int tampilan, dgtNorek = 11, dgtNama = 4, dgtSaldo = 5, sultan, dgtAll;
-
+    int tampilan;
+    // Membaca file nasabah yang sudah ada
     ifstream ifs(filename);
     int count = 0;
     if (ifs.is_open())
@@ -152,7 +164,7 @@ void ReadD()
     else
     {
         do
-        {
+        { // Menu read data
             cout << "Daftar Nasabah Akan Ditampilkan Secara Ascending Berdasarkan :\n"
                  << "1. Nama\n"
                  << "2. Saldo\n"
@@ -167,7 +179,7 @@ void ReadD()
                 cout << "\n\n";
             }
         } while (tampilan != 1 && tampilan != 2);
-
+        // Menentukan sorting berdasarkan nama/saldo
         if (tampilan == 1)
         {
             sorting1(count);
@@ -176,7 +188,7 @@ void ReadD()
         {
             sorting2(count);
         }
-
+        // Menampilkan data nasabah
         system("cls");
         cout << "Menampilkan " << count << " Nasabah Terdaftar :\n";
 
@@ -207,10 +219,11 @@ void ReadD()
 
 void Add()
 {
+    // initialize
     bool ulang = 1;
     char option;
     do
-    {
+    { // Membaca file nasabah
         ifstream ifs(filename);
         int count = 0;
         if (ifs.is_open())
@@ -224,19 +237,18 @@ void Add()
             count += i - 1;
             ifs.close();
         }
-
+        // input no.rekening yang ingin ditambahkan
         cout << "No rekening : ";
         cin >> nasabah[s_nasabah].norek;
-
+        // Mengecek no.rekening yang di input sudah ada/belum
         int index;
-
         for (int i = 0; i <= count; i++)
         {
             index = ((nasabah[s_nasabah].norek == temp[i].norek)) ? i : count;
             if (index != count)
                 break;
         }
-
+        // Input data
         if (index == count)
         {
             cin.ignore(1, '\n');
@@ -249,13 +261,12 @@ void Add()
             {
                 cout << "Tambahkan " << nasabah[s_nasabah].nama << " sebagai nasabah baru (Y/N)? > ";
                 cin >> option;
-                if (option == 'y' || option == 'Y')
+                if (option == 'y' || option == 'Y') // Menambahkan data
                 {
-                    string str = nasabah[s_nasabah].nama;
-                    strcpy(nasabah[s_nasabah].nama, replacespasi(str).c_str());
-
+                    string str = nasabah[s_nasabah].nama;                       // Mengubah char array menjadi string
+                    strcpy(nasabah[s_nasabah].nama, replacespasi(str).c_str()); // Mengubah string menjadi c_str/char array dan memasukkan ke data nasabah
+                    // Menulis data baru ke file nasabah
                     ofstream ofs(filename, ios::app);
-
                     if (ofs.is_open())
                     {
                         ofs << left << setw(5) << count++
@@ -270,7 +281,7 @@ void Add()
                         ulangi = 0;
                     }
                 }
-                else if (option == 'n' || option == 'N')
+                else if (option == 'n' || option == 'N') // Data tidak jadi ditambahkan
                 {
                     cout << "Pendaftaran nasabah dibatalkan. \n";
                     ulangi = 0;
@@ -292,7 +303,7 @@ void Add()
 }
 
 void Del()
-{
+{ // initialize
     bool ulang = 1;
     char option;
     do
@@ -300,6 +311,7 @@ void Del()
         int inrek, find = 0;
         cout << "Masukkan no rekening : ";
         cin >> inrek;
+        // Membaca file nasabah
         ifstream ifs(filename);
         int count = 0;
         int index;
@@ -314,7 +326,7 @@ void Del()
             count += i - 1;
             ifs.close();
         }
-
+        // Membaca file riwayat transaksi
         ifstream ifs_hist(filehistory);
         int counts = 0;
         if (ifs_hist.is_open())
@@ -328,7 +340,7 @@ void Del()
             counts += j - 1;
             ifs_hist.close();
         }
-
+        // Melakukan pengecekan no.rekening
         for (int i = 0; i <= count; i++)
         {
             index = ((inrek == temp[i].norek)) ? i : count;
@@ -344,6 +356,7 @@ void Del()
         else
         {
             int no = 1;
+            // Menulis ulang file data riwayat transaksi yang baru
             ofstream ofs_history("temps.dat", ios::app);
             if (ofs_history.is_open())
             {
@@ -362,9 +375,10 @@ void Del()
                 }
                 ofs_history.close();
             }
+            // Memperbarui file riwayat transaksi
             remove("History.txt");
             rename("temps.dat", "History.txt");
-
+            // Menulis ulang file data nasabah
             ofstream ofs("temp.dat", ios::app);
             if (ofs.is_open())
             {
@@ -382,6 +396,7 @@ void Del()
                 ofs.close();
             }
             cout << "Data berhasil dihapus\n";
+            // Memperbarui file data nasabah
             remove("NasabahBD.txt");
             rename("temp.dat", "NasabahBD.txt");
             ulang = 0;
@@ -396,6 +411,7 @@ void Search()
     int inrek;
     cout << "Masukkan no rekening : ";
     cin >> inrek;
+    // Membaca file nasabah
     ifstream ifs(filename);
     int count = 0;
     int index;
@@ -410,7 +426,7 @@ void Search()
         count += i - 1;
         ifs.close();
     }
-
+    // Melakukan pengecekan no.rekening
     for (int i = 0; i <= count; i++)
     {
         index = ((inrek == temp[i].norek)) ? i : count;
@@ -423,7 +439,7 @@ void Search()
         cout << "Data tidak ditemukan\n";
     }
     else
-    {
+    { // Menampilkan data yang dicari
         cout << "\nData dengan no rekening '" << temp[index].norek << "' ditemukan"
              << "\nNo rekening          : " << temp[index].norek
              << "\nNama                 : " << replaceunderscore(temp[index].nama)
@@ -436,7 +452,7 @@ void Transaksi()
 {
     int optionTransaksi;
     do
-    {
+    { // Menu Transaksi
         system("CLS");
         cout << "\n\n============================================================="
              << "\n                        Program BANK KRUD                      "
@@ -472,6 +488,7 @@ void History()
     int inrek;
     cout << "Masukkan no rekening : ";
     cin >> inrek;
+    // Membaca file nasabah
     ifstream ifs(filename);
     int count = 0;
     int index;
@@ -486,7 +503,7 @@ void History()
         count += i - 1;
         ifs.close();
     }
-
+    // Melakukan pengecekan no.rekening
     for (int i = 0; i <= count; i++)
     {
         index = ((inrek == temp[i].norek)) ? i : count;
@@ -500,6 +517,7 @@ void History()
     }
     else
     {
+        // Membaca file riwayat transaksi
         ifstream ifs(filehistory);
         int counts = 0;
         int indexs;
@@ -514,6 +532,7 @@ void History()
             counts += j - 1;
             ifs.close();
         }
+        // Menampilkan riwayat data yang dicari
         cout << "Nama                 : " << replaceunderscore(temp[index].nama)
              << "\nSaldo                : Rp " << temp[index].saldo
              << "\n\nRiwayat Transaksi\n";
@@ -538,9 +557,9 @@ void History()
 void Saldo(int option)
 {
     int inrek, insal;
-
     cout << "Masukkan no rekening : ";
     cin >> inrek;
+    // Membaca file nasabah
     ifstream ifs(filename);
     int count = 0;
     int index;
@@ -555,7 +574,7 @@ void Saldo(int option)
         count += i - 1;
         ifs.close();
     }
-
+    // Melakukan pengecekan no.rekening
     for (int i = 0; i <= count; i++)
     {
         index = ((inrek == temp[i].norek)) ? i : count;
@@ -571,10 +590,9 @@ void Saldo(int option)
     {
         cout << "Masukkan nominal yang anda inginkan : Rp ";
         cin >> insal;
-
+        // Membaca file riwayat transaksi
         ifstream ifs(filehistory);
         int a = 0;
-
         if (ifs.is_open())
         {
             int j = a;
@@ -589,11 +607,12 @@ void Saldo(int option)
 
         switch (option)
         {
-        case 1:
+        case 1: // Tambah saldo
         {
-            temp[index].saldo += insal;
+            temp[index].saldo += insal; // Menambahkan saldo sesuai jumlah nominal
             transaksi[a].waktu = time(0);
             transaksi[a].trsaksi = "Setoran";
+            // Menulis riwayat setoran terbaru
             ofstream ofs(filehistory, ios::app);
             if (ofs.is_open())
             {
@@ -602,29 +621,27 @@ void Saldo(int option)
                     << setw(30) << temp[index].nama
                     << setw(1) << "+" << left << setw(10) << insal
                     << setw(12) << transaksi[a].trsaksi << setw(20) << replacespasi(ctime(&transaksi[a].waktu));
-
                 ofs.close();
             }
             cout << "\nSuccess";
         }
         break;
-        case 2:
+        case 2: // Penarikan
         {
             if (temp[index].saldo >= insal)
             {
-                temp[index].saldo -= insal;
+                temp[index].saldo -= insal; // Mengurangi saldo sesuai jumlah nominal
                 transaksi[a].waktu = time(0);
                 transaksi[a].trsaksi = "Penarikan";
+                // Menulis riwayat penarikan terbaru
                 ofstream ofs(filehistory, ios::app);
                 if (ofs.is_open())
                 {
-
                     ofs << left << setw(5) << inno[a]
                         << setprecision(10) << setw(15) << temp[index].norek
                         << setw(30) << temp[index].nama
                         << setw(1) << "-" << left << setw(10) << insal
                         << setw(12) << transaksi[a].trsaksi << setw(20) << replacespasi(ctime(&transaksi[a].waktu));
-
                     ofs.close();
                 }
             }
@@ -638,7 +655,7 @@ void Saldo(int option)
             cout << "input tidak valid";
             break;
         }
-
+        // Menulis ulang saldo ke file nasabah
         ofstream ofs("tempsal.dat", ios::app);
         if (ofs.is_open())
         {
@@ -666,6 +683,7 @@ void Transfer()
     char opsi;
     cout << "Masukkan no rekening anda : ";
     cin >> inrek;
+    // Membaca file nasabah
     ifstream ifs(filename);
     int count = 0;
     int index;
@@ -680,7 +698,7 @@ void Transfer()
         count += i - 1;
         ifs.close();
     }
-
+    // Melakukan pengecekan no.rekening
     for (int i = 0; i <= count; i++)
     {
         index = ((inrek == temp[i].norek)) ? i : count;
@@ -696,6 +714,7 @@ void Transfer()
     {
         cout << "Masukkan no rekening tujuan : ";
         cin >> s_inrek;
+        // Melakukan pengecekan no.rekening tujuan
         int indexs;
         for (int i = 0; i <= count; i++)
         {
@@ -719,9 +738,9 @@ void Transfer()
                 cin >> opsi;
                 if (opsi == 'y' || opsi == 'Y')
                 {
+                    // Membaca file riwayat
                     ifstream ifs(filehistory);
                     int a = 0;
-
                     if (ifs.is_open())
                     {
                         int j = a;
@@ -733,20 +752,22 @@ void Transfer()
                         a += j;
                         ifs.close();
                     }
-                    temp[index].saldo -= transfer;
-                    temp[indexs].saldo += transfer;
+                    temp[index].saldo -= transfer;  // Pengurangan saldo pengirim berdasarkan nominal yang ditentukan
+                    temp[indexs].saldo += transfer; // Penambahan saldo penerima berdasarkan nominal yang ditentukan
                     transaksi[a].waktu = time(0);
                     transaksi[a].trsaksi = "Transfer";
                     transaksi[a + 1].waktu = transaksi[a].waktu;
                     transaksi[a + 1].trsaksi = transaksi[a].trsaksi;
+                    // Menulis riwayat transfer ke file riwayat
                     ofstream ofs_history(filehistory, ios::app);
                     if (ofs_history.is_open())
-                    {
+                    { // riwayat transfer pengirim
                         ofs_history << left << setw(5) << inno[a - 1]
                                     << setprecision(10) << setw(15) << temp[index].norek
                                     << setw(30) << temp[index].nama
                                     << setw(1) << "-" << left << setw(10) << transfer
                                     << setw(12) << transaksi[a].trsaksi << setw(20) << replacespasi(ctime(&transaksi[a].waktu));
+                        // riwayat transfer penerima
                         ofs_history << left << setw(5) << inno[a]
                                     << setprecision(10) << setw(15) << temp[indexs].norek
                                     << setw(30) << temp[indexs].nama
@@ -756,6 +777,7 @@ void Transfer()
                     }
                     cout << "\nSuccess\n"
                          << "Saldo anda : Rp " << temp[index].saldo << endl;
+                    // Menulis ulang saldo file nasabah
                     ofstream ofs_temp("tempsal.dat", ios::app);
                     if (ofs_temp.is_open())
                     {
