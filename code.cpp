@@ -18,10 +18,19 @@ void Transaksi();
 void Saldo(int option);
 void Transfer();
 void History();
+void sorting1(int n);
+void sorting2(int n);
 void PressAnyKey();
 
 int tempno[100];
 int inno[1000];
+
+struct riwayat
+{
+    string trsaksi;
+    time_t waktu;
+};
+
 struct data
 {
     int norek;
@@ -29,9 +38,14 @@ struct data
     int saldo;
 };
 string filename = "NasabahBD.txt";
+string filehistory = "History.txt";
 data nasabah[100] = {};
+riwayat transaksi[100];
 data temp[100];
+riwayat temp_log[100];
 data temps[1000];
+data temp_sort;
+string temp_waktu[100];
 int s_nasabah = 0;
 
 int main()
@@ -114,6 +128,7 @@ string replaceunderscore(string str)
 
 void ReadD()
 {
+    int tampilan, dgtNorek = 11, dgtNama = 4, dgtSaldo = 5, sultan, dgtAll;
 
     ifstream ifs(filename);
     int count = 0;
@@ -129,18 +144,63 @@ void ReadD()
         ifs.close();
     }
 
-    cout << left << setw(5) << "No"
-         << setprecision(10) << setw(15) << "No Rekening"
-         << setw(30) << "Nama"
-         << right << setw(10) << "Saldo" << endl;
-    cout << "============================================================\n";
-
-    for (int i = 0; i < count; i++)
+    if (count == 0)
     {
-        cout << left << setw(5) << i + 1
-             << setprecision(10) << setw(15) << temp[i].norek
-             << setw(30) << replaceunderscore(temp[i].nama)
-             << right << setw(10) << temp[i].saldo << endl;
+        cout << "Belum ada Nasabah !! ";
+    }
+
+    else
+    {
+        do
+        {
+            cout << "Daftar Nasabah Akan Ditampilkan Secara Ascending Berdasarkan :\n"
+                 << "1. Nama\n"
+                 << "2. Saldo\n"
+                 << "Masukkan Pilihan (1-2) : ";
+            cin >> tampilan;
+
+            if (tampilan != 1 && tampilan != 2)
+            {
+                cout << "\nPilihan Tidak ditemukan\n"
+                     << "Mohon memilih 1 atau 2 !! ";
+                getch();
+                cout << "\n\n";
+            }
+        } while (tampilan != 1 && tampilan != 2);
+
+        if (tampilan == 1)
+        {
+            sorting1(count);
+        }
+        else if (tampilan == 2)
+        {
+            sorting2(count);
+        }
+
+        system("cls");
+        cout << "Menampilkan " << count << " Nasabah Terdaftar :\n";
+
+        if (tampilan == 1)
+        {
+            cout << "* Nama dengan huruf depan kapital ditampilkan paling atas\n";
+        }
+
+        cout << "\n"
+             << left << setw(5) << "No"
+             << setw(15) << "No.Rekening"
+             << setw(20) << "Nama"
+             << "Saldo"
+             << "\n";
+
+        cout << "=================================================\n";
+
+        for (int i = 0; i < count; i++)
+        {
+            cout << setw(5) << i + 1 << setw(15) << temp[i].norek
+                 << setw(20) << replaceunderscore(temp[i].nama) << temp[i].saldo << "\n";
+        }
+
+        cout << "=================================================\n";
     }
     PressAnyKey();
 }
@@ -255,19 +315,18 @@ void Del()
             ifs.close();
         }
 
-        string filehistory = "History.txt";
-        ifstream ifs_history(filehistory);
+        ifstream ifs_hist(filehistory);
         int counts = 0;
-        if (ifs_history.is_open())
+        if (ifs_hist.is_open())
         {
             int j = counts;
-            while (!ifs_history.eof())
+            while (!ifs_hist.eof())
             {
-                ifs_history >> inno[j] >> temps[j].norek >> temps[j].nama >> temps[j].saldo;
+                ifs_hist >> inno[j] >> temps[j].norek >> temps[j].nama >> temps[j].saldo >> temp_log[j].trsaksi >> temp_waktu[j];
                 j++;
             }
             counts += j - 1;
-            ifs_history.close();
+            ifs_hist.close();
         }
 
         for (int i = 0; i <= count; i++)
@@ -284,7 +343,7 @@ void Del()
         }
         else
         {
-
+            int no = 1;
             ofstream ofs_history("temps.dat", ios::app);
             if (ofs_history.is_open())
             {
@@ -292,11 +351,13 @@ void Del()
                 {
                     if (inrek != temps[i].norek)
                     {
-                        ofs_history << left << setw(5) << inno[i]
-                            << setprecision(10) << setw(15) << temps[i].norek
-                            << setw(30) << temps[i].nama
-                            << right << setw(10) << temps[i].saldo
-                            << endl;
+                        ofs_history << left << setw(5) << no
+                                    << setprecision(10) << setw(15) << temps[i].norek
+                                    << setw(30) << temps[i].nama
+                                    << setw(10) << temps[i].saldo
+                                    << setw(12) << temp_log[i].trsaksi << setw(20) << replacespasi(temp_waktu[i])
+                                    << endl;
+                        no++;
                     }
                 }
                 ofs_history.close();
@@ -320,7 +381,7 @@ void Del()
                 }
                 ofs.close();
             }
-            cout << "Data berhasil dihapus";
+            cout << "Data berhasil dihapus\n";
             remove("NasabahBD.txt");
             rename("temp.dat", "NasabahBD.txt");
             ulang = 0;
@@ -359,12 +420,14 @@ void Search()
 
     if (index == count)
     {
-        cout << "Data tidak ditemukan";
+        cout << "Data tidak ditemukan\n";
     }
     else
     {
-        cout << "Nama                 : " << replaceunderscore(temp[index].nama)
-             << "\nSaldo                : " << temp[index].saldo;
+        cout << "\nData dengan no rekening '" << temp[index].norek << "' ditemukan"
+             << "\nNo rekening          : " << temp[index].norek
+             << "\nNama                 : " << replaceunderscore(temp[index].nama)
+             << "\nSaldo                : " << temp[index].saldo << endl;
     }
     PressAnyKey();
 }
@@ -407,7 +470,6 @@ void Transaksi()
 void History()
 {
     int inrek;
-    string filehistory = "History.txt";
     cout << "Masukkan no rekening : ";
     cin >> inrek;
     ifstream ifs(filename);
@@ -434,7 +496,7 @@ void History()
 
     if (index == count)
     {
-        cout << "Data tidak ditemukan";
+        cout << "Data tidak ditemukan\n";
     }
     else
     {
@@ -446,7 +508,7 @@ void History()
             int j = counts;
             while (!ifs.eof())
             {
-                ifs >> inno[j] >> temps[j].norek >> temps[j].nama >> temps[j].saldo;
+                ifs >> inno[j] >> temps[j].norek >> temps[j].nama >> temps[j].saldo >> temp_log[j].trsaksi >> temp_waktu[j];
                 j++;
             }
             counts += j - 1;
@@ -456,15 +518,17 @@ void History()
              << "\nSaldo                : Rp " << temp[index].saldo
              << "\n\nRiwayat Transaksi\n";
 
-        cout << "==========================================\n"
-             << left << setw(5) << "No" << setw(10) << "Transaksi\n"
-             << "==========================================\n";
+        cout << "============================================================\n"
+             << left << setw(5) << "No" << setw(12) << "Transaksi" << setw(12) << "Ket" << setw(25) << "Waktu" << endl
+             << "============================================================\n";
+
         int n = 1;
         for (int i = 0; i <= counts; i++)
         {
             if (temps[i].norek == temp[index].norek)
             {
-                cout << setw(5) << n++ << setw(10) << temps[i].saldo << endl;
+                cout << setw(5) << n++ << setw(12) << temps[i].saldo
+                     << setw(12) << temp_log[i].trsaksi << setw(25) << replaceunderscore(temp_waktu[i]) << "\n";
             }
         }
     }
@@ -474,7 +538,7 @@ void History()
 void Saldo(int option)
 {
     int inrek, insal;
-    string filehistory = "History.txt";
+
     cout << "Masukkan no rekening : ";
     cin >> inrek;
     ifstream ifs(filename);
@@ -516,7 +580,7 @@ void Saldo(int option)
             int j = a;
             while (!ifs.eof())
             {
-                ifs >> inno[j] >> temps[j].norek >> temps[j].nama >> temps[j].saldo;
+                ifs >> inno[j] >> temps[j].norek >> temps[j].nama >> temps[j].saldo >> temp_log[j].trsaksi >> temp_waktu[j];
                 j++;
             }
             a += j - 1;
@@ -528,41 +592,53 @@ void Saldo(int option)
         case 1:
         {
             temp[index].saldo += insal;
+            transaksi[a].waktu = time(0);
+            transaksi[a].trsaksi = "Setoran";
             ofstream ofs(filehistory, ios::app);
             if (ofs.is_open())
             {
                 ofs << left << setw(5) << inno[a]
                     << setprecision(10) << setw(15) << temp[index].norek
                     << setw(30) << temp[index].nama
-                    << right << setw(10) << "+" << insal
-                    << endl;
+                    << setw(1) << "+" << left << setw(10) << insal
+                    << setw(12) << transaksi[a].trsaksi << setw(20) << replacespasi(ctime(&transaksi[a].waktu));
 
                 ofs.close();
             }
+            cout << "\nSuccess";
         }
         break;
         case 2:
         {
-            temp[index].saldo -= insal;
-            ofstream ofs(filehistory, ios::app);
-            if (ofs.is_open())
+            if (temp[index].saldo >= insal)
             {
+                temp[index].saldo -= insal;
+                transaksi[a].waktu = time(0);
+                transaksi[a].trsaksi = "Penarikan";
+                ofstream ofs(filehistory, ios::app);
+                if (ofs.is_open())
+                {
 
-                ofs << left << setw(5) << inno[a]
-                    << setprecision(10) << setw(15) << temp[index].norek
-                    << setw(30) << temp[index].nama
-                    << right << setw(10) << "-" << insal
-                    << endl;
+                    ofs << left << setw(5) << inno[a]
+                        << setprecision(10) << setw(15) << temp[index].norek
+                        << setw(30) << temp[index].nama
+                        << setw(1) << "-" << left << setw(10) << insal
+                        << setw(12) << transaksi[a].trsaksi << setw(20) << replacespasi(ctime(&transaksi[a].waktu));
 
-                ofs.close();
+                    ofs.close();
+                }
+            }
+            else
+            {
+                cout << "\nMaaf, saldo anda tidak mencukupi!!";
             }
         }
         break;
         default:
+            cout << "input tidak valid";
             break;
         }
 
-        cout << "Saldo anda : Rp " << temp[index].saldo;
         ofstream ofs("tempsal.dat", ios::app);
         if (ofs.is_open())
         {
@@ -577,7 +653,7 @@ void Saldo(int option)
             }
             ofs.close();
         }
-        cout << "\nSuccess";
+        cout << "\nSaldo anda : Rp " << temp[index].saldo << endl;
         remove("NasabahBD.txt");
         rename("tempsal.dat", "NasabahBD.txt");
     }
@@ -586,7 +662,8 @@ void Saldo(int option)
 
 void Transfer()
 {
-    int inrek, s_inrek;
+    int inrek, s_inrek, transfer;
+    char opsi;
     cout << "Masukkan no rekening anda : ";
     cin >> inrek;
     ifstream ifs(filename);
@@ -617,37 +694,96 @@ void Transfer()
     }
     else
     {
-        cout << "Masukkan no rekening yang dituju : ";
+        cout << "Masukkan no rekening tujuan : ";
         cin >> s_inrek;
-        ifstream ifs(filename);
-        int count = 0;
-        int index;
-        if (ifs.is_open())
-        {
-            int i = count;
-            while (!ifs.eof())
-            {
-                ifs >> tempno[i] >> temp[i].norek >> temp[i].nama >> temp[i].saldo;
-                i++;
-            }
-            count += i - 1;
-            ifs.close();
-        }
-
+        int indexs;
         for (int i = 0; i <= count; i++)
         {
-            index = ((inrek == temp[i].norek)) ? i : count;
-            if (index != count)
+            indexs = ((s_inrek == temp[i].norek)) ? i : count;
+            if (indexs != count)
                 break;
         }
 
-        if (index == count)
+        if (indexs == count)
         {
             cout << "Data tidak ditemukan";
         }
         else
         {
             cout << "Masukkan nominal : Rp ";
+            cin >> transfer;
+            if (temp[index].saldo >= transfer)
+            {
+                cout << "\nApakah Anda yakin untuk melakukan transfer sebesar Rp. " << transfer << endl
+                     << "ke rekening " << temp[indexs].norek << " ? [Y/N]";
+                cin >> opsi;
+                if (opsi == 'y' || opsi == 'Y')
+                {
+                    ifstream ifs(filehistory);
+                    int a = 0;
+
+                    if (ifs.is_open())
+                    {
+                        int j = a;
+                        while (!ifs.eof())
+                        {
+                            ifs >> inno[j] >> temps[j].norek >> temps[j].nama >> temps[j].saldo >> temp_log[j].trsaksi >> temp_waktu[j];
+                            j++;
+                        }
+                        a += j;
+                        ifs.close();
+                    }
+                    temp[index].saldo -= transfer;
+                    temp[indexs].saldo += transfer;
+                    transaksi[a].waktu = time(0);
+                    transaksi[a].trsaksi = "Transfer";
+                    transaksi[a + 1].waktu = transaksi[a].waktu;
+                    transaksi[a + 1].trsaksi = transaksi[a].trsaksi;
+                    ofstream ofs_history(filehistory, ios::app);
+                    if (ofs_history.is_open())
+                    {
+                        ofs_history << left << setw(5) << inno[a - 1]
+                                    << setprecision(10) << setw(15) << temp[index].norek
+                                    << setw(30) << temp[index].nama
+                                    << setw(1) << "-" << left << setw(10) << transfer
+                                    << setw(12) << transaksi[a].trsaksi << setw(20) << replacespasi(ctime(&transaksi[a].waktu));
+                        ofs_history << left << setw(5) << inno[a]
+                                    << setprecision(10) << setw(15) << temp[indexs].norek
+                                    << setw(30) << temp[indexs].nama
+                                    << setw(1) << "+" << left << setw(10) << transfer
+                                    << setw(12) << transaksi[a + 1].trsaksi << setw(20) << replacespasi(ctime(&transaksi[a + 1].waktu));
+                        ofs_history.close();
+                    }
+                    cout << "\nSuccess\n"
+                         << "Saldo anda : Rp " << temp[index].saldo << endl;
+                    ofstream ofs_temp("tempsal.dat", ios::app);
+                    if (ofs_temp.is_open())
+                    {
+                        for (int i = 0; i < count; i++)
+                        {
+
+                            ofs_temp << left << setw(5) << tempno[i]
+                                     << setprecision(10) << setw(15) << temp[i].norek
+                                     << setw(30) << temp[i].nama
+                                     << right << setw(10) << temp[i].saldo
+                                     << endl;
+                        }
+                        ofs_temp.close();
+                    }
+                    remove("NasabahBD.txt");
+                    rename("tempsal.dat", "NasabahBD.txt");
+                }
+                else if (opsi == 'n' || opsi == 'N')
+                {
+                    cout << "Transfer dibatalkan. \n";
+                }
+                else
+                    cout << "Input tidak valid! \n";
+            }
+            else
+            {
+                cout << "\nMaaf, saldo anda tidak mencukupi!!\n";
+            }
         }
     }
     PressAnyKey();
@@ -655,8 +791,44 @@ void Transfer()
 
 void PressAnyKey()
 {
-  cout << "\n"
-       << "[Press any key to continue.]";
-  getch();
-  system("CLS");
+    cout << "\n"
+         << "[Press any key to continue.]";
+    getch();
+    system("CLS");
+}
+
+void sorting1(int n)
+{
+    for (int i = 1; i < n; i++)
+    {
+
+        int j = i - 1;
+
+        while (j >= 0 && temp[j + 1].nama < temp[j].nama)
+        {
+
+            temp_sort = temp[j];
+            temp[j] = temp[j + 1];
+            temp[j + 1] = temp_sort;
+            j--;
+        }
+    }
+}
+
+void sorting2(int n)
+{
+    for (int i = 1; i < n; i++)
+    {
+
+        int j = i - 1;
+
+        while (j >= 0 && temp[j + 1].saldo < temp[j].saldo)
+        {
+
+            temp_sort = temp[j];
+            temp[j] = temp[j + 1];
+            temp[j + 1] = temp_sort;
+            j--;
+        }
+    }
 }
